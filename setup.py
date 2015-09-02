@@ -4,6 +4,7 @@ import sys
 install_reqs = [
     "decorator>=3.3.2",
     "requests>=2.6.0",
+    "pandas>=0.15.0"
 ]
 
 if sys.version_info[0] == 2:

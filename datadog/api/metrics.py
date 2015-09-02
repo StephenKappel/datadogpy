@@ -1,5 +1,7 @@
 import time
 
+import pandas as pd
+
 from datadog.api.base import SearchableAPIResource, SendableAPIResource
 from datadog.api.exceptions import ApiError
 
@@ -113,3 +115,31 @@ class Metric(SearchableAPIResource, SendableAPIResource):
             raise ApiError("The parameter '{0}' is required".format(e.args[0]))
 
         return super(Metric, cls)._search(**params)
+
+    @classmethod
+    def query_to_dataframe(cls, start, end, query=None, metric=None, aggr='avg',
+                           filters='*', by=None):
+        if query is not None:
+            my_query = query
+        else:
+            my_query = '%s:%s{%s} %s' % (aggr, metric, filters,
+                                         '' if by is None else 'by {%s}' % by)
+        one_day = 60*60*24
+        datas = list()
+        for ts in range(int(start), int(end), one_day):
+            results = cls.query(start=ts, end=min(end, start+one_day-1),
+                                query=my_query)
+            data = None
+            for s in results['series']:
+                metric_name = s['expression']
+                new_series = pd.DataFrame(s['pointlist'],
+                                          columns=['time', metric_name])
+                new_series['time'] = pd.to_datetime(new_series.time, unit='ms')
+                new_series.set_index('time', inplace=True)
+                if data is None:
+                    data = new_series
+                else:
+                    data = data.merge(new_series, how='outer', left_index=True,
+                                      right_index=True)
+            datas.append(data)
+        return pd.concat(datas)
