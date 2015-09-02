@@ -127,7 +127,7 @@ class Metric(SearchableAPIResource, SendableAPIResource):
         one_day = 60*60*24
         datas = list()
         for ts in range(int(start), int(end), one_day):
-            results = cls.query(start=ts, end=min(end, start+one_day-1),
+            results = cls.query(start=ts, end=min(end, ts+one_day-1),
                                 query=my_query)
             data = None
             for s in results['series']:
