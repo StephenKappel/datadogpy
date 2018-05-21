@@ -54,8 +54,8 @@ class TestDogStatsdThreadSafety(object):
             for _ in range(10000):
                 threading.Thread(target=batch.send_metrics).start()
         time.sleep(1)
-        payload = map(lambda x: x.split("\n"), self.recv())
-        payload = reduce(lambda prev, ele: prev + ele, payload, [])
+        payload = map(lambda x: x.decode('utf-8').split("\n"), self.recv())
+        payload = sum(payload, [])
         t.assert_equal(10001, len(payload), len(payload))
 
     def test_socket_creation(self):

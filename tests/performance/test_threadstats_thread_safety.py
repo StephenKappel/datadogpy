@@ -81,9 +81,9 @@ class TestThreadStatsThreadSafety(object):
 
         # Histogram
         t.assert_equal(len(histogram_metrics), 8, len(histogram_metrics))
-        count_histogram = filter(lambda x: x['metric'] == "histogram.count", histogram_metrics)[0]
+        count_histogram = [hm for hm in histogram_metrics if hm['metric'] == "histogram.count"][0]
         t.assert_equal(count_histogram['points'][0][1], 10000, count_histogram['points'][0][1])
-        sum_histogram = filter(lambda x: x['metric'] == "histogram.avg", histogram_metrics)[0]
+        sum_histogram = [hm for hm in histogram_metrics if hm['metric'] == "histogram.avg"][0]
         t.assert_equal(sum_histogram['points'][0][1], 4999.5, sum_histogram['points'][0][1])
 
         # Events
