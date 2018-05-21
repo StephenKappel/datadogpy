@@ -5,6 +5,7 @@ DogStatsd is a Python client for DogStatsd, a Statsd fork for Datadog.
 
 import logging
 from random import random
+import sys
 from time import time
 import socket
 from functools import wraps
@@ -232,8 +233,15 @@ class DogStatsd(object):
         if tags:
             payload.extend(["|#", ",".join(tags)])
 
-        encoded = "".join(imap(str, payload))
+        encoded = "".join(imap(self._to_str, payload))
         self._send(encoded)
+
+    @staticmethod
+    def _to_str(payload):
+        if sys.version_info[0] == 2:
+            return unicode(payload)
+        else:
+            return str(payload)
 
     def _send_to_server(self, packet):
         try:

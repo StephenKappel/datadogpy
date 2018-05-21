@@ -87,16 +87,16 @@ class TestDogStatsd(object):
         t.assert_equal('histo:123.4|h', self.recv())
 
     def test_tagged_gauge(self):
-        self.statsd.gauge('gt', 123.4, tags=['country:china', 'age:45', 'blue'])
-        t.assert_equal('gt:123.4|g|#country:china,age:45,blue', self.recv())
+        self.statsd.gauge('gt', 123.4, tags=['country:china', 'age:45', u'blué'])
+        t.assert_equal(u'gt:123.4|g|#country:china,age:45,blué', self.recv())
 
     def test_tagged_counter(self):
-        self.statsd.increment('ct', tags=['country:canada', 'red'])
-        t.assert_equal('ct:1|c|#country:canada,red', self.recv())
+        self.statsd.increment('ct', tags=['country:canada', u'réd'])
+        t.assert_equal(u'ct:1|c|#country:canada,réd', self.recv())
 
     def test_tagged_histogram(self):
-        self.statsd.histogram('h', 1, tags=['red'])
-        t.assert_equal('h:1|h|#red', self.recv())
+        self.statsd.histogram('h', 1, tags=[u'réd'])
+        t.assert_equal(u'h:1|h|#réd', self.recv())
 
     def test_sample_rate(self):
         self.statsd.increment('c', sample_rate=0)
